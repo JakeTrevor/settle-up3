@@ -5,24 +5,24 @@ import { commandHandler } from "~/server/bot/command";
 import { interactionSchema } from "~/utils/bot";
 
 export async function POST(req: NextRequest) {
-  const rawBody = (await req.body!.getReader().read()).value!;
-
-  const isValidRequest = verifyKey(
-    rawBody,
-    req.headers.get("x-signature-ed25519")!,
-    req.headers.get("x-signature-timestamp")!,
-    env.DISCORD_PUBLIC_KEY,
-  );
-
-  if (!isValidRequest) {
-    return NextResponse.json({ status: 401, error: "Bad request signature" });
-  }
-
   const message = interactionSchema.parse(await req.json());
 
   if (message.type === "ping") {
     return NextResponse.json({ type: 1 });
   } else if (message.type === "command") {
+    const rawBody = (await req.body!.getReader().read()).value!;
+
+    const isValidRequest = verifyKey(
+      rawBody,
+      req.headers.get("x-signature-ed25519")!,
+      req.headers.get("x-signature-timestamp")!,
+      env.DISCORD_PUBLIC_KEY,
+    );
+
+    if (!isValidRequest) {
+      return NextResponse.json({ status: 401, error: "Bad request signature" });
+    }
+
     return NextResponse.json({
       type: 4,
       data: {
