@@ -16,13 +16,13 @@ export default makeCommand(
   async (caller, { target }) => {
     const tabAmount = await api.tab.getTabAmount.query({
       user1ID: caller.id,
-      user2ID: target.id,
+      user2ID: target,
     });
 
     return tabAmount === 0
-      ? `You and <@${target.id}> are settled up`
+      ? `You and <@${target}> are settled up`
       : tabAmount > 0
-      ? `You owe <@${target.id}> £${tabAmount}`
-      : `<@${target.id}> owes you £${tabAmount * -1}`;
+      ? `You owe <@${target}> £${tabAmount}`
+      : `<@${target}> owes you £${tabAmount * -1}`;
   },
 );

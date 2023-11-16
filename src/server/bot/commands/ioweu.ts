@@ -21,17 +21,17 @@ const ioweu = makeCommand(
     const tabAmount = await api.tab.addToOrCreate.mutate({
       amount: parseFloat(payment),
       debtorID: caller.id,
-      creditorID: target.id,
+      creditorID: target,
     });
 
     const details =
       tabAmount === 0
-        ? `<@${caller.id}> and <@${target.id}> are settled up`
+        ? `<@${caller.id}> and <@${target}> are settled up`
         : tabAmount > 0
-        ? `<@${caller.id}> owes <@${target.id}> £${tabAmount}`
-        : `<@${target.id}> owes <@${caller.id}> £${tabAmount * -1}`;
+        ? `<@${caller.id}> owes <@${target}> £${tabAmount}`
+        : `<@${target}> owes <@${caller.id}> £${tabAmount * -1}`;
 
-    return `Added £${payment} to <@${caller.id}>'s tab with <@${target.id}>. ${details}`;
+    return `Added £${payment} to <@${caller.id}>'s tab with <@${target}>. ${details}`;
   },
 );
 

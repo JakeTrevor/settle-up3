@@ -17,14 +17,14 @@ const poke = makeCommand(
   async (caller, { target }) => {
     const tabAmount = await api.tab.getTabAmount.query({
       user1ID: caller.id,
-      user2ID: target.id,
+      user2ID: target,
     });
 
     return tabAmount === 0
-      ? `You and <@${target.id}> are settled up`
+      ? `You and <@${target}> are settled up`
       : tabAmount > 0
-      ? `You owe <@${target.id}> £${tabAmount}`
-      : `<@${target.id}> pay your tab of £${tabAmount * -1} to <@${caller.id}>`;
+      ? `You owe <@${target}> £${tabAmount}`
+      : `<@${target}> pay your tab of £${tabAmount * -1} to <@${caller.id}>`;
   },
 );
 
