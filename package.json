@@ -10,7 +10,8 @@
     "dev": "next dev",
     "postinstall": "prisma generate",
     "lint": "next lint",
-    "start": "next start"
+    "start": "next start",
+    "deploy-commands": "tsx ./src/deployCommands.ts"
   },
   "dependencies": {
     "@next-auth/prisma-adapter": "^1.0.7",
@@ -23,6 +24,7 @@
     "@trpc/server": "^10.37.1",
     "discord-api-types": "^0.37.63",
     "discord-interactions": "^3.4.0",
+    "dotenv": "^16.3.1",
     "next": "^14.0.0",
     "next-auth": "^4.23.0",
     "react": "18.2.0",
@@ -46,6 +48,7 @@
     "prettier-plugin-tailwindcss": "^0.5.1",
     "prisma": "^5.1.1",
     "tailwindcss": "^3.3.3",
+    "tsx": "^4.1.2",
     "typescript": "^5.1.6"
   },
   "ct3aMetadata": {
