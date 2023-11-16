@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
   );
 
   if (!isValidRequest) {
-    return NextResponse.json({ error: "Bad request signature " });
+    return NextResponse.json({ status: 401, error: "Bad request signature" });
   }
 
   const message = interactionSchema.parse(await req.json());
@@ -31,6 +31,6 @@ export async function POST(req: NextRequest) {
     });
   } else {
     console.error("Unknown Type");
-    return NextResponse.json({ error: "Unknown Type" });
+    return NextResponse.json({ status: 400, error: "Unknown Type" });
   }
 }
