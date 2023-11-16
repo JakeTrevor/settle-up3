@@ -1,7 +1,8 @@
 import {
-  type DiscordUser,
-  type DiscordInteraction,
-} from "~/utils/bot/interactionSchema";
+  type APIUser,
+  type APIChatInputApplicationCommandInteraction,
+  type Snowflake,
+} from "discord-api-types/v10";
 import { type Option } from "./options";
 
 export interface CommandMeta<T extends Record<string, Option>> {
@@ -16,11 +17,11 @@ export interface Command {
 }
 
 export type GenericHandler = (
-  i: DiscordInteraction,
+  i: APIChatInputApplicationCommandInteraction,
 ) => string | Promise<string>;
 
 export type HandlerOf<T extends Record<string, Option>> = (
-  caller: DiscordUser,
+  caller: APIUser,
   args: argsFor<T>,
 ) => string | Promise<string>;
 
@@ -39,5 +40,5 @@ type getArgType<T> = T extends 3
   : T extends 5
   ? boolean
   : T extends 6
-  ? DiscordUser
+  ? Snowflake
   : never;

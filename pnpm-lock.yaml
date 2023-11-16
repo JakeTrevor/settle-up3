@@ -29,6 +29,9 @@ dependencies:
   '@trpc/server':
     specifier: ^10.37.1
     version: 10.43.2
+  discord-api-types:
+    specifier: ^0.37.63
+    version: 0.37.63
   discord-interactions:
     specifier: ^3.4.0
     version: 3.4.0
@@ -47,6 +50,9 @@ dependencies:
   superjson:
     specifier: ^1.13.1
     version: 1.13.3
+  tweetnacl:
+    specifier: ^1.0.3
+    version: 1.0.3
   zod:
     specifier: ^3.22.4
     version: 3.22.4
@@ -1030,6 +1036,10 @@ packages:
     dependencies:
       path-type: 4.0.0
     dev: true
+
+  /discord-api-types@0.37.63:
+    resolution: {integrity: sha512-WbEDWj/1JGCIC1oCMIC4z9XbYY8PrWpV5eqFFQymJhJlHMqgIjqoYbU812X5oj5cwbRrEh6Va4LNLumB2Nt6IQ==}
+    dev: false
 
   /discord-interactions@3.4.0:
     resolution: {integrity: sha512-DG0Jxdd/FcK8liAPhIP4u5YHpnz50JWn9DK4OavxsLD49/WGimXtP3EdOY439MaWyCgQfsfFkA1GsTEyu63RzA==}

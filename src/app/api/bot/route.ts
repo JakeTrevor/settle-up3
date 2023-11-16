@@ -1,36 +1,51 @@
-import { verifyKey } from "discord-interactions";
-import { NextResponse, type NextRequest } from "next/server";
+import {
+  InteractionResponseType,
+  InteractionType,
+  MessageFlags,
+} from "discord-api-types/v10";
+import { NextResponse } from "next/server";
 import { env } from "~/env.mjs";
 import { commandHandler } from "~/server/bot/command";
-import { interactionSchema } from "~/utils/bot";
+import { verifyInteractionRequest } from "~/utils/validateRequest";
 
-export async function POST(req: NextRequest) {
-  const message = interactionSchema.parse(await req.json());
+/**
+ * Use edge runtime which is faster, cheaper, and has no cold-boot.
+ * If you want to use node runtime, you can change this to `node`, but you'll also have to polyfill fetch (and maybe other things).
+ *
+ * @see https://nextjs.org/docs/app/building-your-application/rendering/edge-and-nodejs-runtimes
+ */
+export const runtime = "edge";
 
-  if (message.type === "ping") {
-    return NextResponse.json({ type: 1 });
-  } else if (message.type === "command") {
-    const rawBody = (await req.body!.getReader().read()).value!;
+/**
+ * Handle Discord interactions. Discord will send interactions to this endpoint.
+ *
+ * @see https://discord.com/developers/docs/interactions/receiving-and-responding#receiving-an-interaction
+ */
+export async function POST(request: Request) {
+  const verifyResult = await verifyInteractionRequest(
+    request,
+    env.DISCORD_PUBLIC_KEY,
+  );
+  if (!verifyResult.isValid || !verifyResult.interaction) {
+    return new NextResponse("Invalid request", { status: 401 });
+  }
+  const { interaction } = verifyResult;
 
-    const isValidRequest = verifyKey(
-      rawBody,
-      req.headers.get("x-signature-ed25519")!,
-      req.headers.get("x-signature-timestamp")!,
-      env.DISCORD_PUBLIC_KEY,
-    );
+  if (interaction.type === InteractionType.Ping) {
+    // The `PING` message is used during the initial webhook handshake, and is
+    // required to configure the webhook in the developer portal.
+    return NextResponse.json({ type: InteractionResponseType.Pong });
+  }
 
-    if (!isValidRequest) {
-      return NextResponse.json({ status: 401, error: "Bad request signature" });
-    }
-
+  if (interaction.type === InteractionType.ApplicationCommand) {
     return NextResponse.json({
-      type: 4,
+      type: InteractionResponseType.ChannelMessageWithSource,
       data: {
-        content: await commandHandler.handler(message),
+        content: await commandHandler.handler(interaction),
+        flags: MessageFlags.Ephemeral,
       },
     });
-  } else {
-    console.error("Unknown Type");
-    return NextResponse.json({ status: 400, error: "Unknown Type" });
   }
+
+  return new NextResponse("Unknown command", { status: 400 });
 }
