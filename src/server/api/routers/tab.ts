@@ -38,40 +38,41 @@ export const tabRouter = createTRPCRouter({
       }),
     )
     .output(z.number())
-    .mutation(async ({ input: { debtorID, creditorID, amount }, ctx }) => {
-      const debtor = await getUserFromDiscordID(debtorID, ctx.db);
-      const creditor = await getUserFromDiscordID(creditorID, ctx.db);
+    .mutation(({ input: { debtorID, creditorID, amount }, ctx }) => {
+      return amount;
+      // const debtor = await getUserFromDiscordID(debtorID, ctx.db);
+      // const creditor = await getUserFromDiscordID(creditorID, ctx.db);
 
-      const [userA, userB, flipped] = sorted(debtor, creditor);
-      const tab = await ctx.db.tab.upsert({
-        where: {
-          id: {
-            userA_ID: userA.id,
-            userB_ID: userB.id,
-          },
-        },
-        create: {
-          userA_ID: userA.id,
-          userB_ID: userB.id,
-          amountOwed: flipped ? -amount : amount,
-        },
-        update: {
-          amountOwed: {
-            increment: flipped ? -amount : amount,
-          },
-        },
-      });
+      // const [userA, userB, flipped] = sorted(debtor, creditor);
+      // const tab = await ctx.db.tab.upsert({
+      //   where: {
+      //     id: {
+      //       userA_ID: userA.id,
+      //       userB_ID: userB.id,
+      //     },
+      //   },
+      //   create: {
+      //     userA_ID: userA.id,
+      //     userB_ID: userB.id,
+      //     amountOwed: flipped ? -amount : amount,
+      //   },
+      //   update: {
+      //     amountOwed: {
+      //       increment: flipped ? -amount : amount,
+      //     },
+      //   },
+      // });
 
-      const _transaction = await ctx.db.transaction.create({
-        data: {
-          tabUserA_ID: userA.id,
-          tabUserB_ID: userB.id,
+      // const _transaction = await ctx.db.transaction.create({
+      //   data: {
+      //     tabUserA_ID: userA.id,
+      //     tabUserB_ID: userB.id,
 
-          amount: flipped ? -amount : amount,
-        },
-      });
+      //     amount: flipped ? -amount : amount,
+      //   },
+      // });
 
-      return flipped ? -tab.amountOwed : tab.amountOwed;
+      // return flipped ? -tab.amountOwed : tab.amountOwed;
     }),
 
   clear: publicProcedure
