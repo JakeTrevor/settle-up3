@@ -1,4 +1,4 @@
-import { api } from "~/trpc/server";
+import { api } from "~/trpc/command";
 import makeCommand from "../lib/makeCommand";
 import { UserOption } from "../lib/options";
 
@@ -14,7 +14,7 @@ export default makeCommand(
     },
   },
   async (caller, { target }) => {
-    const tabAmount = await api.tab.getTabAmount.query({
+    const tabAmount = await api.tab.getTabAmount({
       user1ID: caller.id,
       user2ID: target,
     });
