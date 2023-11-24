@@ -9,14 +9,6 @@ import { commandHandler } from "~/server/bot/command";
 import { verifyInteractionRequest } from "~/utils/validateRequest";
 
 /**
- * Use edge runtime which is faster, cheaper, and has no cold-boot.
- * If you want to use node runtime, you can change this to `node`, but you'll also have to polyfill fetch (and maybe other things).
- *
- * @see https://nextjs.org/docs/app/building-your-application/rendering/edge-and-nodejs-runtimes
- */
-export const runtime = "edge";
-
-/**
  * Handle Discord interactions. Discord will send interactions to this endpoint.
  *
  * @see https://discord.com/developers/docs/interactions/receiving-and-responding#receiving-an-interaction

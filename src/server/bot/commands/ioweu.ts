@@ -1,4 +1,4 @@
-import { api } from "~/trpc/server";
+import { api } from "~/trpc/command";
 import makeCommand from "../lib/makeCommand";
 import { StringOption, UserOption } from "../lib/options";
 
@@ -18,7 +18,7 @@ const ioweu = makeCommand(
     },
   },
   async (caller, { target, payment }) => {
-    const tabAmount = await api.tab.addToOrCreate.mutate({
+    const tabAmount = await api.tab.addToOrCreate({
       amount: parseFloat(payment),
       debtorID: caller.id,
       creditorID: target,
