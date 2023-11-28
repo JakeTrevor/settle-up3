@@ -1,4 +1,4 @@
-import { APIUser } from "discord-api-types/v10";
+import { type APIUser } from "discord-api-types/v10";
 import { api } from "~/trpc/command";
 import makeCommand from "../lib/makeCommand";
 import { UserOption } from "../lib/options";

@@ -1,5 +1,6 @@
 /** @type {import("eslint").Linter.Config} */
 const config = {
+  ignorePatterns: ["/prisma/generated"],
   parser: "@typescript-eslint/parser",
   parserOptions: {
     project: true,
