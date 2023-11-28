@@ -1,8 +1,7 @@
-import type { NextPage } from "next";
-import { useSession } from "next-auth/react";
+import { getServerAuthSession } from "~/server/auth";
 
-const Profile: NextPage = () => {
-  const { data: session } = useSession();
+export default async function Profile() {
+  const session = await getServerAuthSession();
 
   const id = session?.user.id;
 
@@ -14,6 +13,4 @@ const Profile: NextPage = () => {
       </div>
     </div>
   );
-};
-
-export default Profile;
+}

@@ -1,10 +1,9 @@
-import type { NextPage } from "next";
-import { useSession } from "next-auth/react";
-
+import { getServerAuthSession } from "~/server/auth";
 import SignIn from "./_components/SignIn";
 
-const Home: NextPage = () => {
-  const { data: session } = useSession();
+export default async function Home() {
+  const session = await getServerAuthSession();
+
   return (
     <div className="flex h-screen items-center justify-center bg-slate-950">
       <div>
@@ -19,6 +18,4 @@ const Home: NextPage = () => {
       </div>
     </div>
   );
-};
-
-export default Home;
+}

@@ -1,12 +1,11 @@
-import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
-import type { FC } from "react";
 
+import { getServerAuthSession } from "~/server/auth";
 import SignIn from "./SignIn";
 
-const Profile: FC = () => {
-  const { data: session } = useSession();
+export default async function Profile() {
+  const session = await getServerAuthSession();
   const user = session?.user;
 
   return (
@@ -39,6 +38,4 @@ const Profile: FC = () => {
       )}
     </>
   );
-};
-
-export default Profile;
+}

@@ -1,9 +1,8 @@
 import Link from "next/link";
-import type { FC } from "react";
 
 import Profile from "./Profile";
 
-const Header: FC = () => {
+export default function Header() {
   return (
     <div className="fixed flex h-20 w-full flex-row items-center justify-between bg-[#FFC517] p-2 px-10">
       <div className="flex flex-row items-center gap-10">
@@ -17,6 +16,4 @@ const Header: FC = () => {
       <Profile />
     </div>
   );
-};
-
-export default Header;
+}
