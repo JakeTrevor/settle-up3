@@ -33,11 +33,11 @@ export const tabRouter = createTRPCRouter({
         user2: UserSchema,
       }),
     )
-    .output(z.number())
+    .output(z.number().optional())
     .query(async ({ input: { user1, user2 }, ctx }) => {
       const [userA, userB, flipped] = sorted(user1, user2);
 
-      const tab = await ctx.db.tab.findUniqueOrThrow({
+      const tab = await ctx.db.tab.findUnique({
         where: {
           id: {
             userA_ID: userA.id,
@@ -45,6 +45,8 @@ export const tabRouter = createTRPCRouter({
           },
         },
       });
+
+      if (!tab) return undefined;
 
       return flipped ? -tab.amountOwed : tab.amountOwed;
     }),

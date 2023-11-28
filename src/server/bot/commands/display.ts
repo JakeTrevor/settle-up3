@@ -26,6 +26,8 @@ export default makeCommand(
       user2: targetAccount,
     });
 
+    if (tabAmount === undefined) return `You and <@${target}> have no tab`;
+
     return tabAmount === 0
       ? `You and <@${target}> are settled up`
       : tabAmount > 0
