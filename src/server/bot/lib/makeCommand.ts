@@ -23,7 +23,7 @@ const wrapper =
   async (i: APIChatInputApplicationCommandInteraction) => {
     type handlerArgType = Parameters<typeof handler>[1];
 
-    const args = Object.entries(meta.options).reduce((acc, [optionName]) => {
+    const args = Object.keys(meta.options).reduce((acc, optionName) => {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const value = (
         i.data.options?.filter(
