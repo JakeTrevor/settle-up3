@@ -1,4 +1,5 @@
 import { api } from "~/trpc/command";
+import { validateCallerAndTarget } from "~/utils/bot/validateCallerAndTarget";
 import makeCommand from "../lib/makeCommand";
 import { UserOption } from "../lib/options";
 
@@ -15,9 +16,15 @@ const poke = makeCommand(
   },
 
   async (caller, { target }) => {
+    const res = await validateCallerAndTarget(caller, target);
+
+    if (res.status === "error") return res.message;
+
+    const [callerAccount, targetAccount] = res.data;
+
     const tabAmount = await api.tab.getTabAmount({
-      user1ID: caller.id,
-      user2ID: target,
+      user1: callerAccount,
+      user2: targetAccount,
     });
 
     return tabAmount === 0
