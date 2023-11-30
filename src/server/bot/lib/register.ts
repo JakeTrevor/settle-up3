@@ -1,4 +1,5 @@
 import { type APIChatInputApplicationCommandInteraction } from "discord-api-types/v10";
+import { Message } from "./message";
 import { type Command } from "./types";
 
 function registerCommands(...commands: Command[]) {
@@ -17,7 +18,11 @@ function registerCommands(...commands: Command[]) {
       return;
     }
 
-    return await command.handler(i);
+    const res = await command.handler(i);
+
+    if (typeof res === "string") return Message(res);
+
+    return res;
   }
 
   return { collection, handler };

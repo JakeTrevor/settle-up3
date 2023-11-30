@@ -4,6 +4,7 @@ import {
   type Snowflake,
 } from "discord-api-types/v10";
 import { type Option } from "./options";
+import { type Message } from "./message";
 
 export interface CommandMeta<T extends Record<string, Option>> {
   name: string;
@@ -13,22 +14,22 @@ export interface CommandMeta<T extends Record<string, Option>> {
 
 export interface Command {
   meta: CommandMeta<Record<string, Option>>;
-  handler: GenericHandler;
+  handler: InteractionHandler;
 }
 
-export type GenericHandler = (
+export type InteractionHandler = (
   i: APIChatInputApplicationCommandInteraction,
-) => string | Promise<string>;
+) => string | Message | Promise<string | Message>;
 
-export type HandlerOf<T extends Record<string, Option>> = (
+export type ArgHandler<Options extends Record<string, Option>> = (
   caller: APIUser,
-  args: argsFor<T>,
-) => string | Promise<string>;
+  args: argsFor<Options>,
+) => string | Message | Promise<string | Message>;
 
-export type argsFor<T extends Record<string, Option>> = {
-  [arg in keyof T]: T[arg]["required"] extends true
-    ? getArgType<T[arg]["type"]>
-    : getArgType<T[arg]["type"]> | undefined;
+export type argsFor<Options extends Record<string, Option>> = {
+  [arg in keyof Options]: Options[arg]["required"] extends true
+    ? getArgType<Options[arg]["type"]>
+    : getArgType<Options[arg]["type"]> | undefined;
 };
 
 type getArgType<T> = T extends 3

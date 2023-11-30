@@ -3,11 +3,11 @@ import {
   type APIChatInputApplicationCommandInteraction,
 } from "discord-api-types/v10";
 import { type Option } from "./options";
-import { type Command, type CommandMeta, type HandlerOf } from "./types";
+import { type Command, type CommandMeta, type ArgHandler } from "./types";
 
 const makeCommand = <T extends Record<string, Option>>(
   meta: CommandMeta<T>,
-  handler: HandlerOf<T>,
+  handler: ArgHandler<T>,
 ) => {
   return {
     meta,
@@ -18,7 +18,7 @@ const makeCommand = <T extends Record<string, Option>>(
 const wrapper =
   <T extends Record<string, Option>>(
     meta: CommandMeta<T>,
-    handler: HandlerOf<T>,
+    handler: ArgHandler<T>,
   ) =>
   async (i: APIChatInputApplicationCommandInteraction) => {
     type handlerArgType = Parameters<typeof handler>[1];

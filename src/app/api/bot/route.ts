@@ -1,7 +1,6 @@
 import {
   InteractionResponseType,
   InteractionType,
-  MessageFlags,
 } from "discord-api-types/v10";
 import { NextResponse } from "next/server";
 import { env } from "~/env.mjs";
@@ -32,10 +31,7 @@ export async function POST(request: Request) {
   if (interaction.type === InteractionType.ApplicationCommand) {
     return NextResponse.json({
       type: InteractionResponseType.ChannelMessageWithSource,
-      data: {
-        content: await commandHandler.handler(interaction),
-        flags: MessageFlags.Ephemeral,
-      },
+      data: await commandHandler.handler(interaction),
     });
   }
 

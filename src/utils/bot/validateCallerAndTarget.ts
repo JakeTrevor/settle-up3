@@ -1,4 +1,5 @@
 import { type APIUser } from "discord-api-types/v10";
+import { Ephemeral } from "~/server/bot/lib/message";
 import { api } from "~/trpc/command";
 
 export async function validateCallerAndTarget(caller: APIUser, target: string) {
@@ -6,14 +7,14 @@ export async function validateCallerAndTarget(caller: APIUser, target: string) {
   if (!callerAccount)
     return {
       status: "error" as const,
-      message: "Please sign up for a settleup account",
+      message: Ephemeral("Please sign up for a settleup account"),
     };
 
   const targetAccount = await api.tab.getUser({ userID: target });
   if (!targetAccount)
     return {
       status: "error" as const,
-      message: `<@${target}> does not have a settleup account`,
+      message: Ephemeral(`<@${target}> does not have a settleup account`),
     };
 
   return {
