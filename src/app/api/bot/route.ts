@@ -29,10 +29,13 @@ export async function POST(request: Request) {
   }
 
   if (interaction.type === InteractionType.ApplicationCommand) {
-    return NextResponse.json({
-      type: InteractionResponseType.ChannelMessageWithSource,
-      data: await commandHandler.handler(interaction),
-    });
+    return NextResponse.json(
+      {
+        type: InteractionResponseType.ChannelMessageWithSource,
+        data: await commandHandler.handler(interaction),
+      },
+      { status: 200 },
+    );
   }
 
   return new NextResponse("Unknown command", { status: 400 });

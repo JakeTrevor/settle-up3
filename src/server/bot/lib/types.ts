@@ -1,7 +1,7 @@
-import {
-  type APIUser,
-  type APIChatInputApplicationCommandInteraction,
-  type Snowflake,
+import type {
+  APIUser,
+  APIChatInputApplicationCommandInteraction,
+  Snowflake,
 } from "discord-api-types/v10";
 import { type Option } from "./options";
 import { type Message } from "./message";
