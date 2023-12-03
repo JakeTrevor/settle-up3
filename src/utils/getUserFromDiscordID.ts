@@ -1,19 +1,18 @@
-import { User, type PrismaClient } from "@prisma/client";
+import { eq } from "drizzle-orm";
+import { type DB, type User, accounts, users } from "~/server/db";
 
 export async function getUserFromDiscordID(
   ID: string,
-  prisma: PrismaClient,
-): Promise<User> {
-  const acc = await prisma.account.findFirstOrThrow({
-    where: {
-      providerAccountId: ID,
-    },
+  db: DB,
+): Promise<User | undefined> {
+  const acc = await db.query.accounts.findFirst({
+    where: eq(accounts.providerAccountId, ID),
   });
 
-  const user = await prisma.user.findUniqueOrThrow({
-    where: {
-      id: acc.userId,
-    },
+  if (!acc) return undefined;
+
+  const user = await db.query.users.findFirst({
+    where: eq(users.id, acc.userId),
   });
 
   return user;

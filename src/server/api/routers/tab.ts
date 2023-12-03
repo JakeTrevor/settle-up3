@@ -1,28 +1,33 @@
 import { z } from "zod";
-import { getUserFromDiscordID, sorted } from "~/utils";
+import { sorted } from "~/utils";
 import { createTRPCRouter, publicProcedure } from "../trpc";
-import { UserSchema } from "prisma/generated/zod";
+
+import { and, eq } from "drizzle-orm";
+import {
+  NewTransactionSchema,
+  UserSchema,
+  accounts,
+  tab as db_tab,
+  transaction as db_transaction,
+  users,
+} from "~/server/db";
 
 export const tabRouter = createTRPCRouter({
   getUser: publicProcedure
     .input(z.object({ userID: z.string() }))
     .output(UserSchema.optional())
     .query(async ({ input: { userID }, ctx }) => {
-      const acc = await ctx.db.account.findFirst({
-        where: {
-          providerAccountId: userID,
-        },
+      const acc = await ctx.db.query.accounts.findFirst({
+        where: eq(accounts.providerAccountId, userID),
       });
 
-      if (acc === null) return undefined;
+      if (!acc) return undefined;
 
-      const user = await ctx.db.user.findUnique({
-        where: {
-          id: acc.userId,
-        },
+      const user = await ctx.db.query.users.findFirst({
+        where: eq(users.id, acc.userId),
       });
 
-      if (user === null) return undefined;
+      if (!user) return undefined;
       return user;
     }),
 
@@ -37,13 +42,11 @@ export const tabRouter = createTRPCRouter({
     .query(async ({ input: { user1, user2 }, ctx }) => {
       const [userA, userB, flipped] = sorted(user1, user2);
 
-      const tab = await ctx.db.tab.findUnique({
-        where: {
-          id: {
-            userA_ID: userA.id,
-            userB_ID: userB.id,
-          },
-        },
+      const tab = await ctx.db.query.tab.findFirst({
+        where: and(
+          eq(db_tab.user_A_ID, userA.id),
+          eq(db_tab.user_B_ID, userB.id),
+        ),
       });
 
       if (!tab) return undefined;
@@ -51,77 +54,47 @@ export const tabRouter = createTRPCRouter({
       return flipped ? -tab.amountOwed : tab.amountOwed;
     }),
 
-  addToOrCreate: publicProcedure
-    .input(
-      z.object({
-        amount: z.number().positive().finite(),
-        debtorID: z.string(),
-        creditorID: z.string(),
-      }),
-    )
-    .output(z.number())
-    .mutation(({ input: { debtorID, creditorID, amount }, ctx }) => {
-      return amount;
-      // const debtor = await getUserFromDiscordID(debtorID, ctx.db);
-      // const creditor = await getUserFromDiscordID(creditorID, ctx.db);
-
-      // const [userA, userB, flipped] = sorted(debtor, creditor);
-      // const tab = await ctx.db.tab.upsert({
-      //   where: {
-      //     id: {
-      //       userA_ID: userA.id,
-      //       userB_ID: userB.id,
-      //     },
-      //   },
-      //   create: {
-      //     userA_ID: userA.id,
-      //     userB_ID: userB.id,
-      //     amountOwed: flipped ? -amount : amount,
-      //   },
-      //   update: {
-      //     amountOwed: {
-      //       increment: flipped ? -amount : amount,
-      //     },
-      //   },
-      // });
-
-      // const _transaction = await ctx.db.transaction.create({
-      //   data: {
-      //     tabUserA_ID: userA.id,
-      //     tabUserB_ID: userB.id,
-
-      //     amount: flipped ? -amount : amount,
-      //   },
-      // });
-
-      // return flipped ? -tab.amountOwed : tab.amountOwed;
-    }),
-
-  clear: publicProcedure
-    .input(
-      z.object({
-        user1ID: z.string(),
-        user2ID: z.string(),
-      }),
-    )
-    .mutation(async ({ input: { user1ID, user2ID }, ctx }) => {
-      const user1 = await getUserFromDiscordID(user1ID, ctx.db);
-      const user2 = await getUserFromDiscordID(user2ID, ctx.db);
-
-      const [userA, userB, _] = sorted(user1, user2);
-
-      const _tab = await ctx.db.tab.update({
-        where: {
-          id: {
-            userA_ID: userA.id,
-            userB_ID: userB.id,
-          },
-        },
-        data: {
-          amountOwed: 0,
-        },
+  createTransaction: publicProcedure
+    .input(NewTransactionSchema)
+    .mutation(async ({ input: transactionData, ctx }) => {
+      const {
+        tab_user_A_ID: user_A_ID,
+        tab_user_B_ID: user_B_ID,
+        amount,
+      } = transactionData;
+      // get or create tab
+      const tab = await ctx.db.query.tab.findFirst({
+        where: and(
+          eq(db_tab.user_A_ID, user_A_ID),
+          eq(db_tab.user_B_ID, user_B_ID),
+        ),
       });
 
-      return 0;
+      if (tab) {
+        await ctx.db
+          .update(db_tab)
+          .set({
+            amountOwed: tab.amountOwed + amount,
+          })
+          .where(
+            and(
+              eq(db_tab.user_A_ID, user_A_ID),
+              eq(db_tab.user_B_ID, user_B_ID),
+            ),
+          );
+      } else {
+        await ctx.db.insert(db_tab).values({
+          amountOwed: amount,
+          user_A_ID: user_A_ID,
+          user_B_ID: user_B_ID,
+        });
+      }
+
+      const transaction = await ctx.db
+        .insert(db_transaction)
+        .values(transactionData)
+        .returning();
+
+      return transaction;
     }),
 });

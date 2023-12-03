@@ -1,4 +1,4 @@
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
+import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import {
   getServerSession,
   type DefaultSession,
@@ -8,6 +8,7 @@ import DiscordProvider from "next-auth/providers/discord";
 
 import { env } from "~/env.mjs";
 import { db } from "~/server/db";
+import { pgTable } from "~/server/db/schema";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -45,7 +46,7 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   },
-  adapter: PrismaAdapter(db),
+  adapter: DrizzleAdapter(db, pgTable),
   providers: [
     DiscordProvider({
       clientId: env.DISCORD_CLIENT_ID,
