@@ -5,7 +5,7 @@ const config = {
   parserOptions: {
     project: true,
   },
-  plugins: ["@typescript-eslint"],
+  plugins: ["@typescript-eslint", "drizzle"],
   extends: [
     "next/core-web-vitals",
     "plugin:@typescript-eslint/recommended-type-checked",
@@ -16,6 +16,8 @@ const config = {
     // Feel free to reconfigure them to your own preference.
     "@typescript-eslint/array-type": "off",
     "@typescript-eslint/consistent-type-definitions": "off",
+    "drizzle/enforce-delete-with-where": "error",
+    "drizzle/enforce-update-with-where": "error",
 
     "@typescript-eslint/consistent-type-imports": [
       "warn",
